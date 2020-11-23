@@ -1,4 +1,4 @@
-#include "Methodgauss.h"
+#include "../../../modules/task_2/nadir_method_gauss/methodGauss.h"
 #include<iostream>
 #include<vector>
 #include<random>
