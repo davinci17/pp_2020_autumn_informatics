@@ -4,41 +4,48 @@
 #include<iomanip>
 #include<mpi.h>
 #include "../../../modules/task_2/nadir_method_gauss/methodGauss.h"
-
-
 int row, col;
-std::vector<std::vector<double>> methodGauss(std::vector<std::vector<double>>array) {
+void methodGauss(const double* array, double* solution) {
+    double* temp_array = new double[row * row + row];
+    for (int i = 0; i < row * row + row; i++) {
+        temp_array[i] = array[i];
+    }
+    int p_Row, marge,r_ind, row;
+    double p_Value, p_Factor;
+    int* p_Pos = new int[row];
+    int* p_Iter = new int[row];
 
-    double* x = new double[row];
-    double temp, s;
-    for (int j = 0; j < row - 1; j++)
-    {
-        for (int i = j + 1; i < row; i++) {
-            temp = array[i][j] / array[j][j];
-            for (int k = 0; k < row + 1; k++) { array[i][k] -= array[j][k] * temp; }
+    for (int i = 0; i < row; i++) {p_Iter[i] = -1; p_Pos[i] = 0;}
+    for (marge = 0; marge < row; marge++) 
+    {double maxValue = 0;
+        for (int i = 0; i < row; i++) {if ((p_Iter[i] == -1) && ((fabs(temp_array[i * (row + 1) + marge]) > maxValue))) {
+        p_Row = i; maxValue = temp_array[i * (row + 1) + marge];}
+        }
+        p_Pos[marge] = p_Row;
+        p_Iter[p_Row] = marge;
+        p_Value = temp_array[p_Row * (row + 1) + marge];
+        for (int i = 0; i < row; i++) {
+            if (p_Iter[i] == -1) {
+                p_Factor = temp_array[i * (row + 1) + marge] / p_Value;
+                for (int j = marge; j < row; j++) {temp_array[i * (row + 1) + j] -= p_Factor * temp_array[p_Row * (row + 1) + j];}
+                temp_array[i * (row + 1) + row] -= p_Factor * temp_array[p_Row * (row + 1) + row];}
         }
     }
-    std::cout << "\n --------------------------------------------------------------------------\n";
-    for (int i = 0; i < row; i++)
-    {
-        for (int j = 0; j < row + 1; j++)
-        {
-            std::cout << std::setw(8) << std::setprecision(4) << std::fixed << array[i][j];
-        } std::cout << std::endl;
+
+    for (int i = (row - 1); i >= 0; i--) {r_ind = p_Pos[i];
+        solution[i] = temp_array[r_ind * (row + 1) + row] / temp_array[r_ind * (row + 1) + i];
+        temp_array[r_ind * (row + 1) + i] = 1;
+
+        for (int j = 0; j < i; j++) {row = p_Pos[j];
+            temp_array[row * (row + 1) + row] -= temp_array[row * (row + 1) + i] * solution[i];
+            temp_array[row * (row + 1) + i] = 0;}
     }
-    std::cout << "\n --------------------------------------------------------------------------\n";
-    for (int i = row - 1; i >= 0; i--)
-    {
-        s = 0;
-        for (int j = i + 1; j < row; j++) {
-            s += array[i][j] * x[j];
-            x[i] = (array[i][row] - s) / array[i][i];
-        }
-    }
-    return array;
+    delete[] temp_array;
+    delete[] p_Pos;
+    delete[] p_Iter;
 }
 
-double* methodGaussParallel(const double* array, double* solution) {
+void methodGaussParallel(const double* array, double* solution) {
     int size, rank;
     double* array_temp = new double[row * col];
     for (int i = 0; i < row * col; i++) { array_temp[i] = array[i]; }
@@ -132,5 +139,5 @@ double* methodGaussParallel(const double* array, double* solution) {
     delete[] n_Element;
     delete[] n_displac;
     delete[] part_trans;
-    return array_temp;
+   
 }
