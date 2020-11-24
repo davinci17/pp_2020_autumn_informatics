@@ -11,7 +11,7 @@ TEST(GAUSS_PARALLEL_MPI, 2x3)
     double* array{ new double[row * col]{ 1,2,3,4,5,6} };
     double* sub_solution1 = new double[row];
 
-    methodGaussParallel(array, sub_solution1);
+    methodGaussParallel(array, sub_solution1, row, col);
     if (rank == 0) {double* sub_solution2 = new double[row];
         methodGauss(array, sub_solution2, row);
         for (int i = 0; i < row; i++) {ASSERT_NEAR(sub_solution1[i], sub_solution2[i],0.00001);}
@@ -29,7 +29,7 @@ TEST(GAUSS_PARALLEL_MPI, 3x4)
     double* array{ new double[row * col]{ 1,2,3,4,5,6,7,8,9,10,11,12 } };
     double* sub_solution1 = new double[row];
 
-    methodGaussParallel(array, sub_solution1);
+    methodGaussParallel(array, sub_solution1, row, col);
     if (rank == 0) {double* sub_solution2 = new double[row];
         methodGauss(array, sub_solution2, row);
         for (int i = 0; i < row; i++) { ASSERT_EQ(sub_solution1[i], sub_solution2[i],0.00001); }
