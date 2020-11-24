@@ -1,11 +1,12 @@
 // Copyright 2020 Nadir Mohammed
+#include "../../../modules/task_2/NADIR_METHOD_GAUSS/Methodgauss.h"
 #include<iostream>
 #include<iomanip>
 #include<mpi.h>
 #include <stddef.h>
 #include <math.h>
 #include <ctime>
-#include "../../../modules/task_2/NADIR_METHOD_GAUSS/Methodgauss.h"
+
 
 void methodGauss(const double* array, double* solution, int row) {
     double* temp_array = new double[row *(row+1)];
