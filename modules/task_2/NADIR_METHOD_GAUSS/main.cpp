@@ -32,7 +32,7 @@ TEST(GAUSS_PARALLEL_MPI, 3x4)
     methodGaussParallel(array, sub_solution1, row, col);
     if (rank == 0) {double* sub_solution2 = new double[row];
         methodGauss(array, sub_solution2, row);
-        for (int i = 0; i < row; i++) { ASSERT_EQ(sub_solution1[i], sub_solution2[i],0.00001); }
+        for (int i = 0; i < row; i++) { ASSERT_NEAR(sub_solution1[i], sub_solution2[i],0.00001); }
         delete[] sub_solution2;
     }
     delete[] array;
