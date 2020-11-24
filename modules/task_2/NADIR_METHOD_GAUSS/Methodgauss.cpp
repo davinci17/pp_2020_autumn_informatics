@@ -45,7 +45,7 @@ void methodGauss(const double* array, double* solution, int row) {
     delete[] p_Iter;
 }
 
-void methodGaussParallel(const double* array, double* solution) {
+void methodGaussParallel(const double* array, double* solution, int row, int col) {
     int size, rank;
     double* array_temp = new double[row * col];
     for (int i = 0; i < row * col; i++) { array_temp[i] = array[i]; }
