@@ -1,3 +1,4 @@
+// Copyright 2020 Nadir Mohammed
 #include<iostream>
 #include<iomanip>
 #include<mpi.h>
