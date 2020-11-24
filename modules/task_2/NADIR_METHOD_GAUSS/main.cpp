@@ -2,7 +2,7 @@
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include<mpi.h>
-#include "../../../modules/task_2/nadir_method_gauss/methodGauss.h"
+#include "./methodGauss.h"
 
 
 TEST(GAUSS_PARALLEL_MPI, 2x3)
