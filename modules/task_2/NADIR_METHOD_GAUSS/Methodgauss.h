@@ -4,7 +4,7 @@
 
 #include<vector>
 
-void methodGauss(const double* array, double* solution);
+void methodGauss(const double* array, double* solution,int row);
 
  void methodGaussParallel(const double* array, double* solution);
  
