@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <math.h>
 #include <ctime>
-#include "../../../modules/task_2/nadir_method_gauss/Methodgauss.h"
+#include "../../../modules/task_2/NADIR_METHOD_GAUSS/Methodgauss.h"
 
 void methodGauss(const double* array, double* solution, int row) {
     double* temp_array = new double[row *(row+1)];
