@@ -5,8 +5,7 @@
 
 TEST(GAUSS_PARALLEL_MPI, 2x3)
 {
-    int rank, size;
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     int row = 2, col = 3;
     double* array{ new double[row * col]{ 1,2,3,4,5,6} };
@@ -15,7 +14,7 @@ TEST(GAUSS_PARALLEL_MPI, 2x3)
     methodGaussParallel(array, sub_solution1);
     if (rank == 0) {double* sub_solution2 = new double[row];
         methodGauss(array, sub_solution2);
-        for (int i = 0; i < row; i++) {ASSERT_EQ(sub_solution1[i], sub_solution2[i]);}
+        for (int i = 0; i < row; i++) {ASSERT_NEAR(sub_solution1[i], sub_solution2[i],0.00001);}
         delete[] sub_solution2;
     }
     delete[] array;
@@ -33,7 +32,7 @@ TEST(GAUSS_PARALLEL_MPI, 3x4)
     methodGaussParallel(array, sub_solution1);
     if (rank == 0) {double* sub_solution2 = new double[row];
         methodGauss(array, sub_solution2);
-        for (int i = 0; i < row; i++) { ASSERT_EQ(sub_solution1[i], sub_solution2[i]); }
+        for (int i = 0; i < row; i++) { ASSERT_EQ(sub_solution1[i], sub_solution2[i],0.00001); }
         delete[] sub_solution2;
     }
     delete[] array;
