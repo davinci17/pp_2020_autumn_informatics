@@ -1,6 +1,4 @@
 #include<iostream>
-#include<vector>
-#include<random>
 #include<iomanip>
 #include<mpi.h>
 #include "../../../modules/task_2/nadir_method_gauss/methodGauss.h"
