@@ -4,8 +4,8 @@
 #include<iomanip>
 #include<mpi.h>
 #include "../../../modules/task_2/nadir_method_gauss/methodGauss.h"
-int row, col;
-void methodGauss(const double* array, double* solution) {
+
+void methodGauss(const double* array, double* solution, int row) {
     double* temp_array = new double[row * row + row];
     for (int i = 0; i < row * row + row; i++) {
         temp_array[i] = array[i];
@@ -126,13 +126,7 @@ void methodGaussParallel(const double* array, double* solution) {
             solution[i] = b / array_temp[i * col + i];
         }
     }
-    std::cout << "\n --------------------------------------------------------------------------\n";
-    for (int i = 0; i < row * col; i++)
-    {
-        std::cout << std::setprecision(4) << std::setw(8) << std::fixed << array_temp[i];
-        if ((i + 1) % col == 0) { std::cout << std::endl; }
-    }
-    std::cout << "\n --------------------------------------------------------------------------\n";
+   
   
     delete[] array_temp;
     delete[] sub_array;
