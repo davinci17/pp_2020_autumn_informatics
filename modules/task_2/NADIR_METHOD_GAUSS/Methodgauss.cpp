@@ -2,82 +2,47 @@
 #include "../../../modules/task_2/NADIR_METHOD_GAUSS/Methodgauss.h"
 #include<iostream>
 #include<iomanip>
+#include<vector>
 #include<mpi.h>
-#include <stddef.h>
-#include <math.h>
-#include <ctime>
 
+std::vector<std::vector<double>> methodGauss(std::vector<std::vector<double>>array, int row) {
 
-
-
-
+    double* x = new double[row];
+    double temp, s;
+    for (int j = 0; j < row - 1; j++)
+    {
+        for (int i = j + 1; i < row; i++) {
+            temp = array[i][j] / array[j][j];
+            for (int k = 0; k < row + 1; k++) { array[i][k] -= array[j][k] * temp; }
+        }
+    }
     
-void methodGauss(const double* array, double* result, int size) {
-    double* temp_array = new double[size * (size + 1)];
-    for (int i = 0; i < size * (size + 1); i++) {
-        temp_array[i] = array[i];
-    }
-
-
-    int p_Row;
-    int* p_Pla = new int[size];
-    int* p_Ind = new int[size];
-
-    for (int i = 0; i < size; i++) {
-        p_Ind[i] = -1;
-        p_Pla[i] = 0;
-    }
-
-    int Ind;  
-
-    for (Ind = 0; Ind < size; Ind++) {
-       
-        double n_max = 0;
-        for (int i = 0; i < size; i++) {
-            if ((p_Ind[i] == -1) && ((fabs(temp_array[i * (size + 1) + Ind]) > n_max))) {
-                p_Row = i;
-                n_max = temp_array[i * (size + 1) + Ind];
-            }
-        }
-
-        p_Pla[Ind] = p_Row;
-        p_Ind[p_Row] = Ind;
-
-      
-        double p_val, p_fra;
-        p_val = temp_array[p_Row * (size + 1) + Ind];
-        for (int i = 0; i < size; i++) {
-            if (p_Ind[i] == -1) {
-                p_fra = temp_array[i * (size + 1) + Ind] / p_val;
-                for (int j = Ind; j < size; j++) {
-                    temp_array[i * (size + 1) + j] -= p_fra * temp_array[p_Row * (size + 1) + j];
-                }
-
-                temp_array[i * (size + 1) + size] -= p_fra * temp_array[p_Row * (size + 1) + size];
-            }
+    for (int i = row - 1; i >= 0; i--)
+    {
+        s = 0;
+        for (int j = i + 1; j < row; j++) {
+            s += array[i][j] * x[j];
+            x[i] = (array[i][row] - s) / array[i][i];
         }
     }
+    return array;
+}
+double* convertVector(std::vector<std::vector<double>> vec, double* solution2) {
 
-  
-    int rowIdx, row;
-    for (int i = (size - 1); i >= 0; i--) {
-        rowIdx = p_Pla[i];
-        result[i] = temp_array[rowIdx * (size + 1) + size] / temp_array[rowIdx * (size + 1) + i];
-        temp_array[rowIdx * (size + 1) + i] = 1;
 
-        for (int j = 0; j < i; j++) {
-            row = p_Pla[j];
-            temp_array[row * (size + 1) + size] -= temp_array[row * (size + 1) + i] * result[i];
-            temp_array[row * (size + 1) + i] = 0;
-        }
+    double* sub_vec = solution2;
+
+    for (int i = 0; i < vec.size(); i++) {
+        std::copy(vec[i].begin(), vec[i].end(), sub_vec);
+        sub_vec += vec[i].size();
+
     }
 
-    delete[] temp_array;
-    delete[] p_Pla;
-    delete[] p_Ind;
+    return solution2;
 }
 
-void methodGaussParallel(const double* array, double* solution, int col, int row) {
+double* methodGaussParallel(const double* array, int row, int col) {
+    double* solution = new double[row];
     double* temp_array = new double[row * col];
     for (int i = 0; i < row * col; i++) {
         temp_array[i] = array[i];
@@ -183,10 +148,11 @@ void methodGaussParallel(const double* array, double* solution, int col, int row
             solution[i] = b / temp_array[i * col + i];
         }
     }
-
+    return temp_array;
     delete[] temp_array;
     delete[] sub_array;
     delete[] n_Element;
     delete[] deplac;
     delete[] p_row;
 }
+
