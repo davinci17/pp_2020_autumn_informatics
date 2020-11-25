@@ -5,7 +5,8 @@
 #include "./Methodgauss.h"
 
 
-TEST(GAUSS_PARALLEL_MPI, 2x3)
+
+ TEST(GAUSS_PARALLEL_MPI, 2x3)
 {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -19,12 +20,11 @@ TEST(GAUSS_PARALLEL_MPI, 2x3)
     methodGaussParallel(array, sub_solution1, row,col);
     if (rank == 0) {double* sub_solution2 = new double[row];
         methodGauss(array, sub_solution2, row);
-        for (int i = 0; i < row; i++) { if (i == 1) { 
-            sub_solution1[1] /= 4;
-            ASSERT_NEAR(sub_solution1[i], sub_solution2[i], 0.00001); 
+        for (int i = 0; i < row; i++) { 
+         
+           ASSERT_NEAR(sub_solution1[i], sub_solution2[i], 0.00001); 
         }
-        else { ASSERT_NEAR(sub_solution1[i], sub_solution2[i], 0.00001); }
-        }
+       
         delete[] sub_solution2;
     }
     delete[] array;
@@ -47,30 +47,12 @@ TEST(GAUSS_PARALLEL_MPI, 3x4)
     if (rank == 0) {double* sub_solution2 = new double[row];
         methodGauss(array, sub_solution2, row);
         for (int i = 0; i < row; i++) {
-            if (i == 1) {
-                sub_solution1[1] /= 5;
+          
+
                 ASSERT_NEAR(sub_solution1[i], sub_solution2[i], 0.00001);
             }
-            else { ASSERT_NEAR(sub_solution1[i], sub_solution2[i], 0.00001); }
-        }
+        delete[] sub_solution2;
     }
     delete[] array;
     delete[] sub_solution1;
-}
-
-
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    MPI_Init(&argc, &argv);
-
-    ::testing::AddGlobalTestEnvironment(new GTestMPIListener::MPIEnvironment);
-    ::testing::TestEventListeners& listeners =
-        ::testing::UnitTest::GetInstance()->listeners();
-
-    listeners.Release(listeners.default_result_printer());
-    listeners.Release(listeners.default_xml_generator());
-
-    listeners.Append(new GTestMPIListener::MPIMinimalistPrinter);
-    return RUN_ALL_TESTS();
 }
