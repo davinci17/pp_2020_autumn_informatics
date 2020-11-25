@@ -148,11 +148,11 @@ double* methodGaussParallel(const double* array, int row, int col) {
             solution[i] = b / temp_array[i * col + i];
         }
     }
-    return temp_array;
     delete[] temp_array;
     delete[] sub_array;
     delete[] n_Element;
     delete[] deplac;
     delete[] p_row;
+    return temp_array;
 }
 
