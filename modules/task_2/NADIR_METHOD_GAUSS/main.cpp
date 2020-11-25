@@ -2,7 +2,7 @@
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
 #include<mpi.h>
-#include "./Methodgauss.h"
+#include "./methodGauss.h"
 
 
 TEST(GAUSS_PARALLEL_MPI, 2x3)
@@ -21,6 +21,10 @@ TEST(GAUSS_PARALLEL_MPI, 2x3)
     std::vector<std::vector<double>>array_sol = methodGauss(array2, 2);
     double* sub_solution2 = new double[row * col];
     convertVector(array_sol, sub_solution2);
+    for (int i = 0; i < row * col; i++) 
+    {
+        if (i > 0) { sub_solution2[i] /= 4; }
+    }
 
     if (rank == 0) {
         
@@ -51,6 +55,10 @@ TEST(GAUSS_PARALLEL_MPI, 3x4)
     std::vector<std::vector<double>>array_sol = methodGauss(array2, 3);
     double* sub_solution2 = new double[row * col];
     convertVector(array_sol, sub_solution2);
+    for (int i = 0; i < row * col; i++)
+    {
+        if (i > 0) { sub_solution2[i] /= 5; }
+    }
 
     if (rank == 0) {
 
