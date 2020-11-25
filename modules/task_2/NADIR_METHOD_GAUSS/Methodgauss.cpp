@@ -8,162 +8,185 @@
 #include <ctime>
 
 
-void methodGauss(const double* array, double* solution, int row) {
-    double* temp_array = new double[row *(row+1)];
-    for (int i = 0; i < row * (row+1); i++) {
+
+
+
+    
+void methodGauss(const double* array, double* result, int size) {
+    double* temp_array = new double[size * (size + 1)];
+    for (int i = 0; i < size * (size + 1); i++) {
         temp_array[i] = array[i];
     }
-    int p_Row, marge, r_ind, row;
 
-    double p_Value, p_Factor;
 
-    int* p_Pos = new int[row];
+    int p_Row;
+    int* p_Pla = new int[size];
+    int* p_Ind = new int[size];
 
-    int* p_Iter = new int[row];
+    for (int i = 0; i < size; i++) {
+        p_Ind[i] = -1;
+        p_Pla[i] = 0;
+    }
 
-    for (int i = 0; i < row; i++) {p_Iter[i] = -1; p_Pos[i] = 0;}
+    int Ind;  
 
-    for (marge = 0; marge < row; marge++) 
-
-    {double maxValue = 0;
-        for (int i = 0; i < row; i++) {
-            if ((p_Iter[i] == -1) && ((fabs(temp_array[i * (row + 1) + marge]) > maxValue))) 
-            {
-        p_Row = i; maxValue = temp_array[i * (row + 1) + marge];
+    for (Ind = 0; Ind < size; Ind++) {
+       
+        double n_max = 0;
+        for (int i = 0; i < size; i++) {
+            if ((p_Ind[i] == -1) && ((fabs(temp_array[i * (size + 1) + Ind]) > n_max))) {
+                p_Row = i;
+                n_max = temp_array[i * (size + 1) + Ind];
             }
         }
-        p_Pos[marge] = p_Row;
-        p_Iter[p_Row] = marge;
 
-        p_Value = temp_array[p_Row * (row + 1) + marge];
-        for (int i = 0; i < row; i++) {
-            if (p_Iter[i] == -1) {
-                p_Factor = temp_array[i * (row + 1) + marge] / p_Value;
-                for (int j = marge; j < row; j++) {
-                    temp_array[i * (row + 1) + j] -= p_Factor * temp_array[p_Row * (row + 1) + j];
+        p_Pla[Ind] = p_Row;
+        p_Ind[p_Row] = Ind;
+
+      
+        double p_val, p_fra;
+        p_val = temp_array[p_Row * (size + 1) + Ind];
+        for (int i = 0; i < size; i++) {
+            if (p_Ind[i] == -1) {
+                p_fra = temp_array[i * (size + 1) + Ind] / p_val;
+                for (int j = Ind; j < size; j++) {
+                    temp_array[i * (size + 1) + j] -= p_fra * temp_array[p_Row * (size + 1) + j];
                 }
-                temp_array[i * (row + 1) + row] -= p_Factor * temp_array[p_Row * (row + 1) + row];}
+
+                temp_array[i * (size + 1) + size] -= p_fra * temp_array[p_Row * (size + 1) + size];
+            }
         }
     }
 
-    for (int i = (row - 1); i >= 0; i--) {
-        r_ind = p_Pos[i];
-        solution[i] = temp_array[r_ind * (row + 1) + row] / temp_array[r_ind * (row + 1) + i];
-        temp_array[r_ind * (row + 1) + i] = 1;
+  
+    int rowIdx, row;
+    for (int i = (size - 1); i >= 0; i--) {
+        rowIdx = p_Pla[i];
+        result[i] = temp_array[rowIdx * (size + 1) + size] / temp_array[rowIdx * (size + 1) + i];
+        temp_array[rowIdx * (size + 1) + i] = 1;
 
-        for (int j = 0; j < i; j++) {row = p_Pos[j];
-            temp_array[row * (row + 1) + row] -= temp_array[row * (row + 1) + i] * solution[i];
-            temp_array[row * (row + 1) + i] = 0;}
+        for (int j = 0; j < i; j++) {
+            row = p_Pla[j];
+            temp_array[row * (size + 1) + size] -= temp_array[row * (size + 1) + i] * result[i];
+            temp_array[row * (size + 1) + i] = 0;
+        }
     }
+
     delete[] temp_array;
-    delete[] p_Pos;
-    delete[] p_Iter;
+    delete[] p_Pla;
+    delete[] p_Ind;
 }
 
-void methodGaussParallel(const double* array, double* solution, int row,int col) {
-    int size, rank;
-    double* array_temp = new double[row * col];
-    for (int i = 0; i < row * col; i++) { array_temp[i] = array[i]; }
+void methodGaussParallel(const double* array, double* solution, int col, int row) {
+    double* temp_array = new double[row * col];
+    for (int i = 0; i < row * col; i++) {
+        temp_array[i] = array[i];
+    }
 
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    int p_size, rank;
+
+    MPI_Comm_size(MPI_COMM_WORLD, &p_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    int n_Row = row / size;
-    int rest_Row = row % size;
+    const int numberRow = row / p_size;
+  
+    const int restRow = row % p_size;
 
-    int stan_Row;
-    if (rank < rest_Row) { stan_Row = n_Row + 1; }
-    else { stan_Row = n_Row; }
+    int stan_R;
+    if (rank < restRow) {
+        stan_R = numberRow + 1;
+    }
+    else {
+        stan_R = numberRow;
+    }
 
-    double* sub_array = new double[col * stan_Row];
-    int* n_Element = new int[size];
-    int* n_displac = new int[size];
+    double* sub_array = new double[col * stan_R];
+    int* n_Element = new int[p_size];
+    int* deplac = new int[p_size];
 
-    n_displac[0] = 0;
-    for (int i = 0; i < size; i++) {
-
-        if (i < rest_Row) { n_Element[i] = (n_Row + 1) * col; }
-        else { 
-            n_Element[i] = n_Row * col; 
-             }
-        if (i > 0) { 
-            n_displac[i] = n_displac[i - 1] + n_Element[i - 1]; 
+    deplac[0] = 0;
+    for (int i = 0; i < p_size; i++) {
+        if (i < restRow) {
+            n_Element[i] = (numberRow + 1) * col;
+        }
+        else {
+            n_Element[i] = numberRow * col;
+        }
+        if (i > 0) {
+            deplac[i] = deplac[i - 1] + n_Element[i - 1];
         }
     }
-    MPI_Scatterv(array_temp, n_Element, n_displac, MPI_DOUBLE, sub_array, stan_Row * col, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-    double* part_trans = new double[col];
+    
+    MPI_Scatterv(temp_array, n_Element, deplac, MPI_DOUBLE, sub_array, stan_R * col, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-    for (int i = 0; i < n_displac[rank] / col; i++)
-    {
-        int rac = 0, sum = 0;
-        for (int j = 0; j < size; j++) {
+    double* p_row = new double[col];
+
+    for (int i = 0; i < deplac[rank] / col; i++) {
+        int rac = 0;
+        int sum = 0;
+        for (int j = 0; j < p_size; j++) {
             sum += n_Element[j] / col;
-            if (i < sum) { 
-                rac = j; break;
-            }  
+            if (i < sum) {
+                rac = j;
+                break;
+            }
             rac++;
         }
 
-        MPI_Bcast(part_trans, col, MPI_DOUBLE, rac, MPI_COMM_WORLD);
+        MPI_Bcast(p_row, col, MPI_DOUBLE, rac, MPI_COMM_WORLD);
 
         for (int j = 0; j < n_Element[rank] / col; j++) {
-            double s = part_trans[i] / sub_array[j * col + i];
-            for (int z = i; z < col; z++) { 
-                sub_array[j * col + z] = s * sub_array[j * col + z] - part_trans[z]; 
+            double s = p_row[i] / sub_array[j * col + i];
+            for (int z = i; z < col; z++) {
+                sub_array[j * col + z] = s * sub_array[j * col + z] - p_row[z];
             }
         }
     }
 
     for (int i = 0; i < n_Element[rank] / col; i++) {
         for (int j = 0; j < col; j++) {
-            part_trans[j] = sub_array[i * col + j];
+            p_row[j] = sub_array[i * col + j];
         }
-
-        MPI_Bcast(part_trans, col, MPI_DOUBLE, rank, MPI_COMM_WORLD);
+        MPI_Bcast(p_row, col, MPI_DOUBLE, rank, MPI_COMM_WORLD);
 
         for (int j = i + 1; j < n_Element[rank] / col; j++) {
-            double s = part_trans[n_displac[rank] / col + i] / sub_array[j * col + i + n_displac[rank] / col];
-            for (int z = i + n_displac[rank] / col; z < col; z++) 
-            {
-                sub_array[j * col + z] = s * sub_array[j * col + z] - part_trans[z];
+            double s = p_row[deplac[rank] / col + i] / sub_array[j * col + i + deplac[rank] / col];
+            for (int z = i + deplac[rank] / col; z < col; z++) {
+                sub_array[j * col + z] = s * sub_array[j * col + z] - p_row[z];
             }
         }
     }
 
     int rac = 0;
-    for (int i = n_displac[rank] / col + n_Element[rank] / col; i < row; i++) {
+    for (int i = deplac[rank] / col + n_Element[rank] / col; i < row; i++) {
         int sum = 0;
-        for (int j = 0; j < size; j++) {
+        for (int j = 0; j < p_size; j++) {
             sum += n_Element[j] / col;
-            if (i < sum) { rac = j; break; 
+            if (i < sum) {
+                rac = j;
+                break;
             }
             rac++;
         }
-
-        MPI_Bcast(part_trans, col, MPI_DOUBLE, rac, MPI_COMM_WORLD);
+        MPI_Bcast(p_row, col, MPI_DOUBLE, rac, MPI_COMM_WORLD);
     }
 
-    MPI_Gatherv(sub_array, stan_Row * col, MPI_DOUBLE, array_temp, n_Element, n_displac, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Gatherv(sub_array, stan_R * col, MPI_DOUBLE, temp_array, n_Element, deplac, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     if (rank == 0) {
-        for (int i = row - 1; i >= 0; i--) 
-        {
-            double b = array_temp[i * col + col - 1];
-            for (int j = row - 1; j >= i + 1; j--)
-            {
-                b -= array_temp[i * col + j] * solution[j];
+        for (int i = row - 1; i >= 0; i--) {
+            double b = temp_array[i * col + col - 1];
+            for (int j = row - 1; j >= i + 1; j--) {
+                b -= temp_array[i * col + j] * solution[j];
             }
-            solution[i] = b / array_temp[i * col + i];
+            solution[i] = b / temp_array[i * col + i];
         }
     }
-   
-  
-    delete[] array_temp;
+
+    delete[] temp_array;
     delete[] sub_array;
     delete[] n_Element;
-    delete[] n_displac;
-    delete[] part_trans;
-   
-}  
-  
+    delete[] deplac;
+    delete[] p_row;
+}
