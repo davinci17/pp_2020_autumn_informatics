@@ -38,8 +38,8 @@ void dijkstra(int graph[kCol][kCol], int src, int* dist) {
     delete[] dist;
 }
 class temp_operat {
-public:
-    int attr_val, pos;
+    public:
+        int attr_val, pos;
 }mini_part, gen_part;
 
 void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
