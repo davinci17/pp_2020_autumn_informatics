@@ -5,8 +5,7 @@
 #include<iostream>
 #include "./dijkstra_algorithm.h"
 
-TEST(FIRST_TEST, 8X8) 
-{
+TEST(FIRST_TEST, 8X8) {
     int size, rank;
     const int r_col = 9;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -32,7 +31,6 @@ TEST(FIRST_TEST, 8X8)
                   0, 0, 0, 0, 0, 2, 0, 1, 6 ,
                   8, 11, 0, 0, 0, 0, 1, 0, 7 ,
                   0, 0, 2, 0, 0, 0, 6, 7, 0 };
-   
     int* arr1_resu = new int[r_col];
     getParallelDijkstras(graph1, 4, arr1_resu);
         if (rank == 0) {
@@ -42,8 +40,7 @@ TEST(FIRST_TEST, 8X8)
         }
 }
 
-TEST(FIRST_TEST, 9X9)
-{
+TEST(FIRST_TEST, 9X9) {
     int size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);

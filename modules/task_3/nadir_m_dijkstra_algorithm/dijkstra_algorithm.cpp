@@ -1,12 +1,11 @@
 // Copyright 2020 Nadir Mohammed
-#include"dijkstra_algorithm.h"
 #include<iostream>
 #include<mpi.h>
 #include<vector>
+#include"../../../modules/task_3/nadir_m_dijkstra_algorithm/dijkstra_algorithm.h"
 
 
-int minDistance(int dist[], bool sptSet[])
-{
+int minDistance(int dist[], bool sptSet[]) {
     int min = INT_MAX, min_index;
     for (int v = 0; v < r_col; v++) {
         if (sptSet[v] == false && dist[v] <= min)
@@ -15,11 +14,9 @@ int minDistance(int dist[], bool sptSet[])
     return min_index;
 }
 
-void dijkstra(int graph[r_col][r_col], int src, int* dist)
-{
+void dijkstra(int graph[r_col][r_col], int src, int* dist) {
     dist[r_col];
     bool sptSet[r_col];
-
     for (int i = 0; i < r_col; i++) { 
         dist[i] = INT_MAX, sptSet[i] = false; }
     dist[src] = 0;
@@ -46,14 +43,14 @@ void getParallelDijkstras(int graph[r_col * r_col], int src, int* dist) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     class temp_operat {
-    public:
+    public: 
         int attr_val, pos;
     };
     dist[r_col];
     bool sptSet[r_col];
     for (int i = 0; i < r_col; i++) { 
-        dist[i] = INT_MAX, sptSet[i] = false; }
-
+        dist[i] = INT_MAX, sptSet[i] = false; 
+    }
     dist[src] = 0;
     int min = INT_MAX;
     int* sub_graph = new int[r_col * (r_col / size)];
@@ -63,15 +60,13 @@ void getParallelDijkstras(int graph[r_col * r_col], int src, int* dist) {
     int rest;
     if (rank == 0) {
         rest = 0;
-    }
-    else {
+    } else {
         rest = r_col % size + (r_col / size) * rank;
     }
     MPI_Scatter(&graph[(r_col % size) * r_col], (r_col / size) * r_col,
         MPI_INT, &sub_graph[0], (r_col / size) * r_col, MPI_INT, 0, MPI_COMM_WORLD);
     if (rank == 0) {
         for (int i = 0; i < r_col * (r_col / size); i++) { sub_graph[i] = graph[i]; }
-
     }
     int num_col = r_col / size;
 
@@ -111,8 +106,7 @@ void getParallelDijkstras(int graph[r_col * r_col], int src, int* dist) {
                     dist[i] = result[i];
                 }
             }
-        }
-        else {
+        } else {
             for (int i = 1; i < size; i++) {
                 if (rank == i) {
                     MPI_Send(&dist[r_col % size + rank * (r_col / size)], r_col / size,

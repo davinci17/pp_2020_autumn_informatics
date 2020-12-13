@@ -7,4 +7,4 @@ int minDistance(int dist[], bool sptSet[]);
 void dijkstra(int graph[r_col][r_col], int src, int* dist);
 void getParallelDijkstras(int graph[r_col * r_col], int src, int* dist);
 
-#endif // MODULES_TASK_3_NADIR_M_DIJKSTRA_ALGORITHM_DIJKSTRA_ALGORITHM_H_
+#endif //   MODULES_TASK_3_NADIR_M_DIJKSTRA_ALGORITHM_DIJKSTRA_ALGORITHM_H_
