@@ -4,9 +4,9 @@
 #include<iostream>
 #include<vector>
 
-
+int maxPoint = 30;
 int minDistance(int dist[], bool sptSet[]) {
-    int min = INT_MAX, min_index;
+    int min = maxPoint, min_index;
     for (int v = 0; v < kCol; v++) {
         if (sptSet[v] == false && dist[v] <= min)
             min = dist[v], min_index = v;
@@ -18,14 +18,14 @@ void dijkstra(int graph[kCol][kCol], int src, int* dist) {
     dist[kCol];
     bool sptSet[kCol];
     for (int i = 0; i < kCol; i++) {
-        dist[i] = INT_MAX, sptSet[i] = false; }
+        dist[i] = maxPoint, sptSet[i] = false; }
     dist[src] = 0;
     for (int count = 0; count < kCol - 1; count++) {
         int u = minDistance(dist, sptSet);
         sptSet[u] = true;
 
         for (int v = 0; v < kCol; v++) {
-            if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX && dist[u] + graph[u][v] < dist[v]) {
+            if (!sptSet[v] && graph[u][v] && dist[u] != maxPoint && dist[u] + graph[u][v] < dist[v]) {
                 dist[v] = dist[u] + graph[u][v];
             }
         }
@@ -42,22 +42,21 @@ void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
     int size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    class temp_operat {
-        public:
-            int attr_val, pos;
-    };
+
     dist[kCol];
     bool sptSet[kCol];
     for (int i = 0; i < kCol; i++) {
-        dist[i] = INT_MAX, sptSet[i] = false;
+        dist[i] = maxPoint, sptSet[i] = false;
     }
     dist[src] = 0;
-    int min = INT_MAX;
+    int min = maxPoint, rest;
     int* sub_graph = new int[kCol * (kCol / size)];
 
-    temp_operat mini_part;
-    temp_operat  gen_part;
-    int rest;
+class temp_operat {
+    public:
+        int attr_val, pos;
+}mini_part, gen_part;
+
     if (rank == 0) {
         rest = 0;
     } else {
