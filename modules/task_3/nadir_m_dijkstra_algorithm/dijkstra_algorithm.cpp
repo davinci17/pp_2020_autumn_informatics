@@ -52,11 +52,6 @@ void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
     int min = maxPoint, rest;
     int* sub_graph = new int[kCol * (kCol / size)];
 
-class temp_operat {
-    public:
-        int attr_val, pos;
-}mini_part, gen_part;
-
     if (rank == 0) {
         rest = 0;
     } else {
