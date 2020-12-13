@@ -1,59 +1,59 @@
 // Copyright 2020 Nadir Mohammed
+#include"../../../modules/task_3/nadir_m_dijkstra_algorithm/dijkstra_algorithm.h"
 #include<iostream>
 #include<mpi.h>
 #include<vector>
-#include"../../../modules/task_3/nadir_m_dijkstra_algorithm/dijkstra_algorithm.h"
 
 
 int minDistance(int dist[], bool sptSet[]) {
     int min = INT_MAX, min_index;
-    for (int v = 0; v < r_col; v++) {
+    for (int v = 0; v < kCol; v++) {
         if (sptSet[v] == false && dist[v] <= min)
             min = dist[v], min_index = v;
     }
     return min_index;
 }
 
-void dijkstra(int graph[r_col][r_col], int src, int* dist) {
-    dist[r_col];
-    bool sptSet[r_col];
-    for (int i = 0; i < r_col; i++) { 
+void dijkstra(int graph[kCol][kCol], int src, int* dist) {
+    dist[kCol];
+    bool sptSet[kCol];
+    for (int i = 0; i < kCol; i++) {
         dist[i] = INT_MAX, sptSet[i] = false; }
     dist[src] = 0;
-    for (int count = 0; count < r_col - 1; count++) {
+    for (int count = 0; count < kCol - 1; count++) {
         int u = minDistance(dist, sptSet);
         sptSet[u] = true;
 
-        for (int v = 0; v < r_col; v++) {
+        for (int v = 0; v < kCol; v++) {
             if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX && dist[u] + graph[u][v] < dist[v]) {
                 dist[v] = dist[u] + graph[u][v];
             }
         }
     }
     std::cout << "Vertex \t\t Distance from Source\n" << std::endl;
-    for (int i = 0; i < r_col; i++) {
+    for (int i = 0; i < kCol; i++) {
         std::cout << i << "\t\t" << dist[i] << std::endl;
     }
     std::cout << "********************************" << std::endl;
     delete[] dist;
 }
 
-void getParallelDijkstras(int graph[r_col * r_col], int src, int* dist) {
+void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
     int size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     class temp_operat {
-    public: 
+    public:
         int attr_val, pos;
     };
-    dist[r_col];
-    bool sptSet[r_col];
-    for (int i = 0; i < r_col; i++) { 
-        dist[i] = INT_MAX, sptSet[i] = false; 
+    dist[kCol];
+    bool sptSet[kCol];
+    for (int i = 0; i < kCol; i++) {
+        dist[i] = INT_MAX, sptSet[i] = false;
     }
     dist[src] = 0;
     int min = INT_MAX;
-    int* sub_graph = new int[r_col * (r_col / size)];
+    int* sub_graph = new int[kCol * (kCol / size)];
 
     temp_operat mini_part;
     temp_operat  gen_part;
@@ -61,16 +61,16 @@ void getParallelDijkstras(int graph[r_col * r_col], int src, int* dist) {
     if (rank == 0) {
         rest = 0;
     } else {
-        rest = r_col % size + (r_col / size) * rank;
+        rest = kCol % size + (kCol / size) * rank;
     }
-    MPI_Scatter(&graph[(r_col % size) * r_col], (r_col / size) * r_col,
-        MPI_INT, &sub_graph[0], (r_col / size) * r_col, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Scatter(&graph[(kCol % size) * kCol], (kCol / size) * kCol,
+        MPI_INT, &sub_graph[0], (kCol / size) * kCol, MPI_INT, 0, MPI_COMM_WORLD);
     if (rank == 0) {
-        for (int i = 0; i < r_col * (r_col / size); i++) { sub_graph[i] = graph[i]; }
+        for (int i = 0; i < kCol * (kCol / size); i++) { sub_graph[i] = graph[i]; }
     }
-    int num_col = r_col / size;
+    int num_col = kCol / size;
 
-    for (int i = 0; i < r_col - 1; i++) {
+    for (int i = 0; i < kCol - 1; i++) {
         mini_part.attr_val = -1;
         mini_part.pos = -1;
         for (int j = rest; j < num_col + rest; j++) {
@@ -89,34 +89,34 @@ void getParallelDijkstras(int graph[r_col * r_col], int src, int* dist) {
         sptSet[gen_part.pos] = true;
 
         for (int k = 0; k < num_col; k++) {
-            if (sub_graph[gen_part.pos + r_col * k] != 0 &&
-                dist[gen_part.pos] + sub_graph[gen_part.pos + r_col * k] < dist[k + rest]) {
-                dist[k + rest] = dist[gen_part.pos] + sub_graph[gen_part.pos + r_col * k];
+            if (sub_graph[gen_part.pos + kCol * k] != 0 &&
+                dist[gen_part.pos] + sub_graph[gen_part.pos + kCol * k] < dist[k + rest]) {
+                dist[k + rest] = dist[gen_part.pos] + sub_graph[gen_part.pos + kCol * k];
             }
         }
-        int sizeResult = r_col % size + r_col / size + (r_col / size);
+        int sizeResult = kCol % size + kCol / size + (kCol / size);
         if (rank == 0) {
-            int* result = new int[r_col / size];
+            int* result = new int[kCol / size];
 
             for (int i = 1; i < size; i++) {
-                MPI_Recv(&result[0], r_col / size,
+                MPI_Recv(&result[0], kCol / size,
                     MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-                for (int i = r_col % size + r_col / size; i < sizeResult; i++) {
+                for (int i = kCol % size + kCol / size; i < sizeResult; i++) {
                     dist[i] = result[i];
                 }
             }
         } else {
             for (int i = 1; i < size; i++) {
                 if (rank == i) {
-                    MPI_Send(&dist[r_col % size + rank * (r_col / size)], r_col / size,
+                    MPI_Send(&dist[kCol % size + rank * (kCol / size)], kCol / size,
                         MPI_INT, 0, 0, MPI_COMM_WORLD);
                 }
             }
         }
         MPI_Bcast(&dist[0], sizeResult, MPI_INT, 0, MPI_COMM_WORLD);
     }
-    for (int i = 0; i < r_col; i++) {
+    for (int i = 0; i < kCol; i++) {
         std::cout << i << "\t\t" << dist[i] << std::endl;
     }
     delete[] sub_graph;

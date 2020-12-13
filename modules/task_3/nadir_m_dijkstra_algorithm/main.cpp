@@ -10,8 +10,8 @@ TEST(FIRST_TEST, 9X9) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    const int r_col = 9;
-    int graph[r_col][r_col] = { { 0, 4, 0, 0, 0, 0, 0, 8, 0 },
+    const int kCol = 9;
+    int graph[kCol][kCol] = { { 0, 4, 0, 0, 0, 0, 0, 8, 0 },
                         { 4, 0, 8, 0, 0, 0, 0, 11, 0 },
                         { 0, 8, 0, 7, 0, 4, 0, 0, 2 },
                         { 0, 0, 7, 0, 9, 14, 0, 0, 0 },
@@ -20,11 +20,11 @@ TEST(FIRST_TEST, 9X9) {
                         { 0, 0, 0, 0, 0, 2, 0, 1, 6 },
                         { 8, 11, 0, 0, 0, 0, 1, 0, 7 },
                         { 0, 0, 2, 0, 0, 0, 6, 7, 0 } };
-    int* arr_resu = new int[r_col];
+    int* arr_resu = new int[kCol];
 
     dijkstra(graph, 4, arr_resu);
     //**************************************************************
-    int graph1[r_col * r_col] = { 0, 4, 0, 0, 0, 0, 0, 8, 0,
+    int graph1[kCol * kCol] = { 0, 4, 0, 0, 0, 0, 0, 8, 0,
                   4, 0, 8, 0, 0, 0, 0, 11, 0,
                   0, 8, 0, 7, 0, 4, 0, 0, 2,
                   0, 0, 7, 0, 9, 14, 0, 0, 0,
@@ -33,10 +33,10 @@ TEST(FIRST_TEST, 9X9) {
                   0, 0, 0, 0, 0, 2, 0, 1, 6,
                   8, 11, 0, 0, 0, 0, 1, 0, 7,
                   0, 0, 2, 0, 0, 0, 6, 7, 0};
-    int* arr1_resu = new int[r_col];
+    int* arr1_resu = new int[kCol];
     getParallelDijkstras(graph1, 4, arr1_resu);
     if (rank == 0) {
-        for (int i = 0; i < r_col; i++) {
+        for (int i = 0; i < kCol; i++) {
             ASSERT_EQ(arr1_resu[i], arr_resu[i]);
         }
     }
