@@ -42,7 +42,7 @@ void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
     int size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
+    temp_operat mini_part, gen_part;
     dist[kCol];
     bool sptSet[kCol];
     for (int i = 0; i < kCol; i++) {
