@@ -37,6 +37,10 @@ void dijkstra(int graph[kCol][kCol], int src, int* dist) {
     std::cout << "********************************" << std::endl;
     delete[] dist;
 }
+class temp_operat {
+public:
+    int attr_val, pos;
+}mini_part, gen_part;
 
 void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
     int size, rank;
