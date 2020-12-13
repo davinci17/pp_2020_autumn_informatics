@@ -1,7 +1,7 @@
 // Copyright 2020 Nadir Mohammed
 #include"../../../modules/task_3/nadir_m_dijkstra_algorithm/dijkstra_algorithm.h"
-#include<iostream>
 #include<mpi.h>
+#include<iostream>
 #include<vector>
 
 
@@ -43,8 +43,8 @@ void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     class temp_operat {
-    public:
-        int attr_val, pos;
+      public:
+      int attr_val, pos;
     };
     dist[kCol];
     bool sptSet[kCol];
