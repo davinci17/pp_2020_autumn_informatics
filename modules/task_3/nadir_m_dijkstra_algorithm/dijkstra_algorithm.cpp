@@ -15,6 +15,7 @@ int minDistance(int dist[], bool sptSet[]) {
 }
 
 void dijkstra(int graph[kCol][kCol], int src, int* dist) {
+    const int kCol = 9;
     dist[kCol];
     bool sptSet[kCol];
     for (int i = 0; i < kCol; i++) {
@@ -30,21 +31,23 @@ void dijkstra(int graph[kCol][kCol], int src, int* dist) {
             }
         }
     }
-    std::cout << "Vertex \t\t Distance from Source\n" << std::endl;
+   /* std::cout << "Vertex \t\t Distance from Source\n" << std::endl;
     for (int i = 0; i < kCol; i++) {
         std::cout << i << "\t\t" << dist[i] << std::endl;
     }
     std::cout << "********************************" << std::endl;
-    delete[] dist;
+    delete[] dist;*/
 }
 
 void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
+    const int kCol = 9; 
     int size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     temp_operat mini_part, gen_part;
     dist[kCol];
     bool sptSet[kCol];
+    int* result = new int[kCol / size];
     for (int i = 0; i < kCol; i++) {
         dist[i] = maxPoint, sptSet[i] = false;
     }
@@ -90,8 +93,6 @@ void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
         }
         int sizeResult = kCol % size + kCol / size + (kCol / size);
         if (rank == 0) {
-            int* result = new int[kCol / size];
-
             for (int i = 1; i < size; i++) {
                 MPI_Recv(&result[0], kCol / size,
                     MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -114,4 +115,5 @@ void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
         std::cout << i << "\t\t" << dist[i] << std::endl;
     }
     delete[] sub_graph;
+    delete[] result;
 }
