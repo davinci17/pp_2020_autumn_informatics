@@ -40,7 +40,7 @@ void dijkstra(int graph[kCol][kCol], int src, int* dist) {
 }
 
 void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
-    const int kCol = 9; 
+    const int kCol = 9;
     int size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
