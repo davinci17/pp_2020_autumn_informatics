@@ -4,7 +4,7 @@
 #include<iostream>
 #include<vector>
 
-int maxPoint = 30;
+int maxPoint = INT_MAX;
 int minDistance(int dist[], bool sptSet[]) {
     int min = maxPoint, min_index;
     for (int v = 0; v < kCol; v++) {
@@ -31,12 +31,6 @@ void dijkstra(int graph[kCol][kCol], int src, int* dist) {
             }
         }
     }
-   /* std::cout << "Vertex \t\t Distance from Source\n" << std::endl;
-    for (int i = 0; i < kCol; i++) {
-        std::cout << i << "\t\t" << dist[i] << std::endl;
-    }
-    std::cout << "********************************" << std::endl;
-    delete[] dist;*/
 }
 
 void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
@@ -116,4 +110,5 @@ void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
     }
     delete[] sub_graph;
     delete[] result;
+    delete[] dist;
 }
