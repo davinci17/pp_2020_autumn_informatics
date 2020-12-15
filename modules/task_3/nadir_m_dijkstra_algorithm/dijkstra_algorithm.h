@@ -4,8 +4,8 @@
 
 const int kCol = 9;
 int minDistance(int dist[], bool sptSet[]);
-void dijkstra(int graph[kCol][kCol], int src, int* dist);
-void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist);
+void dijkstra(int graph[kCol][kCol], int src, int* dBettPoint);
+void getParallelDijkstras(int graph[kCol * kCol], int src, int* dBettPoint);
 class temp_operat {
  public:
   int attr_val, pos;

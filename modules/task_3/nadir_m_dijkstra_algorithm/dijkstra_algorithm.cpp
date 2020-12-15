@@ -5,49 +5,49 @@
 #include<vector>
 
 int maxPoint = 50;
-int minDistance(int dist[], bool sptSet[]) {
+int minDistance(int dBettPoint[], bool sptSet[]) {
     int min = maxPoint, min_index;
     for (int v = 0; v < kCol; v++) {
-        if (sptSet[v] == false && dist[v] <= min)
-            min = dist[v], min_index = v;
+        if (sptSet[v] == false && dBettPoint[v] <= min)
+            min = dBettPoint[v], min_index = v;
     }
     return min_index;
 }
 
-void dijkstra(int graph[kCol][kCol], int src, int* dist) {
+void dijkstra(int graph[kCol][kCol], int src, int* dBettPoint) {
     const int kCol = 9;
-    dist = new int[kCol];
+    dBettPoint = new int[kCol];
     bool sptSet[kCol];
     for (int i = 0; i < kCol; i++) {
-        dist[i] = maxPoint, sptSet[i] = false; }
-    dist[src] = 0;
+        dBettPoint[i] = maxPoint, sptSet[i] = false; }
+    dBettPoint[src] = 0;
     for (int count = 0; count < kCol - 1; count++) {
-        int u = minDistance(dist, sptSet);
+        int u = minDistance(dBettPoint, sptSet);
         sptSet[u] = true;
 
         for (int v = 0; v < kCol; v++) {
-            if (!sptSet[v] && graph[u][v] && dist[u] != maxPoint && dist[u] + graph[u][v] < dist[v]) {
-                dist[v] = dist[u] + graph[u][v];
+            if (!sptSet[v] && graph[u][v] && dBettPoint[u] != maxPoint && dBettPoint[u] + graph[u][v] < dBettPoint[v]) {
+                dBettPoint[v] = dBettPoint[u] + graph[u][v];
             }
         }
     }
 }
 
-void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
+void getParallelDijkstras(int graph[kCol * kCol], int src, int* dBettPoint) {
     const int kCol = 9;
     int size, rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    temp_operat mini_part, gen_part;
-    dist = new int[kCol];
+    temp_operat miniPart, genPart;
+    dBettPoint = new int[kCol];
     bool sptSet[kCol];
     int* result = new int[kCol / size];
     for (int i = 0; i < kCol; i++) {
-        dist[i] = maxPoint, sptSet[i] = false;
+        dBettPoint[i] = maxPoint, sptSet[i] = false;
     }
-    dist[src] = 0;
+    dBettPoint[src] = 0;
     int min = maxPoint, rest;
-    int* sub_graph = new int[kCol * (kCol / size)];
+    int* secondArr = new int[kCol * (kCol / size)];
 
     if (rank == 0) {
         rest = 0;
@@ -55,34 +55,34 @@ void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
         rest = kCol % size + (kCol / size) * rank;
     }
     MPI_Scatter(&graph[(kCol % size) * kCol], (kCol / size) * kCol,
-        MPI_INT, &sub_graph[0], (kCol / size) * kCol, MPI_INT, 0, MPI_COMM_WORLD);
+        MPI_INT, &secondArr[0], (kCol / size) * kCol, MPI_INT, 0, MPI_COMM_WORLD);
     if (rank == 0) {
-        for (int i = 0; i < kCol * (kCol / size); i++) { sub_graph[i] = graph[i]; }
+        for (int i = 0; i < kCol * (kCol / size); i++) { secondArr[i] = graph[i]; }
     }
     int num_col = kCol / size;
 
     for (int i = 0; i < kCol - 1; i++) {
-        mini_part.attr_val = -1;
-        mini_part.pos = -1;
+        miniPart.attr_val = -1;
+        miniPart.pos = -1;
         for (int j = rest; j < num_col + rest; j++) {
-            if (!sptSet[j] && (mini_part.pos == -1 || dist[j] < dist[mini_part.pos])) {
-                mini_part.pos = j;
-                mini_part.attr_val = dist[mini_part.pos];
+            if (!sptSet[j] && (miniPart.pos == -1 || dBettPoint[j] < dBettPoint[miniPart.pos])) {
+                miniPart.pos = j;
+                miniPart.attr_val = dBettPoint[miniPart.pos];
             }
         }
-        if (mini_part.pos == -1) {
-            mini_part.attr_val = min;
+        if (miniPart.pos == -1) {
+            miniPart.attr_val = min;
         }
-        MPI_Allreduce(&mini_part, &gen_part, 1, MPI_2INT, MPI_MINLOC, MPI_COMM_WORLD);
-        if (gen_part.pos == -1 || dist[gen_part.pos] == min) {
+        MPI_Allreduce(&miniPart, &genPart, 1, MPI_2INT, MPI_MINLOC, MPI_COMM_WORLD);
+        if (genPart.pos == -1 || dBettPoint[genPart.pos] == min) {
             break;
         }
-        sptSet[gen_part.pos] = true;
+        sptSet[genPart.pos] = true;
 
-        for (int k = 0; k < num_col; k++) {
-            if (sub_graph[gen_part.pos + kCol * k] != 0 &&
-                dist[gen_part.pos] + sub_graph[gen_part.pos + kCol * k] < dist[k + rest]) {
-                dist[k + rest] = dist[gen_part.pos] + sub_graph[gen_part.pos + kCol * k];
+        for (int cou = 0; cou < num_col; cou++) {
+            if (secondArr[genPart.pos + kCol * cou] != 0 &&
+                dBettPoint[genPart.pos] + secondArr[genPart.pos + kCol * cou] < dBettPoint[cou + rest]) {
+                dBettPoint[cou + rest] = dBettPoint[genPart.pos] + secondArr[genPart.pos + kCol * cou];
             }
         }
         int sizeResult = kCol % size + kCol / size + (kCol / size);
@@ -92,23 +92,23 @@ void getParallelDijkstras(int graph[kCol * kCol], int src, int* dist) {
                     MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
                 for (int i = kCol % size + kCol / size; i < sizeResult; i++) {
-                    dist[i] = result[i];
+                    dBettPoint[i] = result[i];
                 }
             }
         } else {
             for (int i = 1; i < size; i++) {
                 if (rank == i) {
-                    MPI_Send(&dist[kCol % size + rank * (kCol / size)], kCol / size,
+                    MPI_Send(&dBettPoint[kCol % size + rank * (kCol / size)], kCol / size,
                         MPI_INT, 0, 0, MPI_COMM_WORLD);
                 }
             }
         }
-        MPI_Bcast(&dist[0], sizeResult, MPI_INT, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&dBettPoint[0], sizeResult, MPI_INT, 0, MPI_COMM_WORLD);
     }
     for (int i = 0; i < kCol; i++) {
-        std::cout << i << "\t\t" << dist[i] << std::endl;
+        std::cout << i << "\t\t" << dBettPoint[i] << std::endl;
     }
-    delete[] sub_graph;
+    delete[] secondArr;
     delete[] result;
-    delete[] dist;
+    delete[] dBettPoint;
 }
