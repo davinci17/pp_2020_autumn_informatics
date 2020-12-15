@@ -20,7 +20,7 @@ TEST(FIRST_TEST, 9X9) {
                         { 8, 11, 0, 0, 0, 0, 1, 0, 7 },
                         { 0, 0, 2, 0, 0, 0, 6, 7, 0 } };
     int* soluArr = new int[kCol];
-    dijkstra(graph, 4, soluArr);
+    dijkstra(graph, 0, soluArr);
     int graph1[kCol * kCol] = { 0, 4, 0, 0, 0, 0, 0, 8, 0,
                   4, 0, 8, 0, 0, 0, 0, 11, 0,
                   0, 8, 0, 7, 0, 4, 0, 0, 2,
