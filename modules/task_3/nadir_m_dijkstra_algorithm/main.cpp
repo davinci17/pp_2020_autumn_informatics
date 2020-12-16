@@ -19,8 +19,8 @@ TEST(FIRST_TEST, 9X9) {
                         { 0, 0, 0, 0, 0, 2, 0, 1, 6 },
                         { 8, 11, 0, 0, 0, 0, 1, 0, 7 },
                         { 0, 0, 2, 0, 0, 0, 6, 7, 0 } };
-    int* soluArr = new int[kCol];
-    dijkstra(graph, 0, soluArr);
+    int* soluArr1 = new int[kCol];
+    dijkstra(graph, 0, soluArr1);
     int graph1[kCol * kCol] = { 0, 4, 0, 0, 0, 0, 0, 8, 0,
                   4, 0, 8, 0, 0, 0, 0, 11, 0,
                   0, 8, 0, 7, 0, 4, 0, 0, 2,
@@ -34,10 +34,10 @@ TEST(FIRST_TEST, 9X9) {
     getParallelDijkstras(graph1, 4, soluArr2);
     if (rank == 0) {
         for (int i = 0; i < kCol; i++) {
-            ASSERT_EQ(soluArr[i], soluArr[i]);
+            ASSERT_EQ(soluArr1[i], soluArr1[i]);
         }
     }
-    delete[] soluArr;
+    delete[] soluArr1;
     delete[] soluArr2;
 }
 int main(int argc, char* argv[]) {
