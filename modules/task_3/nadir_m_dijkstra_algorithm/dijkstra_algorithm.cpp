@@ -31,6 +31,7 @@ void dijkstra(int graph[kCol][kCol], int src, int* dBettPoint) {
             }
         }
     }
+    delete[] dBettPoint;
 }
 
 void getParallelDijkstras(int graph[kCol * kCol], int src, int* dBettPoint) {

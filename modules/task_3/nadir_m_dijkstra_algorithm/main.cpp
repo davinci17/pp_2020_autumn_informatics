@@ -37,6 +37,8 @@ TEST(FIRST_TEST, 9X9) {
             ASSERT_EQ(soluArr[i], soluArr[i]);
         }
     }
+    delete[] soluArr;
+    delete[] soluArr2;
 }
 int main(int argc, char* argv[]) {
     ::testing::InitGoogleTest(&argc, argv);
