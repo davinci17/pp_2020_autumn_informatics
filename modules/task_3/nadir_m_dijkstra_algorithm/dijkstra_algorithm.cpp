@@ -109,7 +109,5 @@ void getParallelDijkstras(int graph[kCol * kCol], int src, int* dBettPoint) {
     for (int i = 0; i < kCol; i++) {
         std::cout << i << "\t\t" << dBettPoint[i] << std::endl;
     }
-    delete[] secondArr;
-    delete[] result;
     delete[] dBettPoint;
 }
