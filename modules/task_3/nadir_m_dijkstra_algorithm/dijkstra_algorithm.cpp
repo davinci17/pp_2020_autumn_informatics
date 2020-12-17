@@ -4,7 +4,7 @@
 #include<iostream>
 #include<vector>
 
-int maxPoint = 50;
+int maxPoint = 2147483647;
 int minDistance(int dBettPoint[], bool sptSet[]) {
     int min = maxPoint, min_index;
     for (int v = 0; v < kCol; v++) {
